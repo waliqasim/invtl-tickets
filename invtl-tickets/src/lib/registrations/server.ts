@@ -82,7 +82,7 @@ export function toEventView(e: Record<string, any>): EventView {
     slug: e.slug ?? e.id,
     title: e.title ?? e.name ?? 'INVTL',
     dateISO,
-    timeLabel: e.time ?? e.time_label ?? '',
+    timeLabel: e.event_time ?? e.time ?? e.time_label ?? '',
     venue: e.venue ?? e.location ?? '',
     image: e.image_url ?? e.cover_image_url ?? e.hero_image_url ?? e.image ?? null,
     registrationOpen: !!e.registration_open,
