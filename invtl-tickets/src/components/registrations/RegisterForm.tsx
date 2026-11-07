@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import EntryNotice from './EntryNotice';
 
 const label = 'font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-400';
 const input =
@@ -23,7 +24,7 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
     setError(null);
     if (!first.trim() || !last.trim()) return setError('Add your first and last name.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError("That email doesn't look right. Check it and try again.");
-    if (!agreed) return setError('Tick the box to agree to the meet rules.');
+    if (!agreed) return setError('Tick the box to confirm you understand this is show entry only and agree to the meet rules.');
     if (spotsLeft !== null && party > spotsLeft) return setError(`Only ${spotsLeft} spots left. Lower your party size.`);
 
     setBusy(true);
@@ -51,7 +52,8 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
   return (
     <form onSubmit={submit} noValidate className="border border-white p-6 sm:p-8">
       <h2 className="text-[26px] font-bold uppercase tracking-wide">Claim your pass</h2>
-      <p className="mb-6 text-sm text-neutral-400">Four fields. Takes about 20 seconds.</p>
+      <p className="mb-5 text-sm text-neutral-400">Four fields. Takes about 20 seconds.</p>
+      <EntryNotice className="mb-6" />
 
       {error && (
         <div role="alert" className="mb-4 flex gap-2.5 border border-white px-3.5 py-3 text-sm">
@@ -98,7 +100,7 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
 
       <label className="mb-5 mt-1 flex items-start gap-3 text-sm">
         <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-0.5 h-[18px] w-[18px] flex-none accent-white" />
-        <span>I&apos;ll follow the INVTL meet rules: no burnouts, no revving, no speeding in or out.</span>
+        <span>I understand this ticket is for show entry only (no car display, no parking), and I&apos;ll follow the INVTL meet rules: no burnouts, no revving, no speeding in or out.</span>
       </label>
 
       <button
