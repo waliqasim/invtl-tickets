@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import IntroSplash from '@/components/IntroSplash';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -10,10 +11,14 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: '#000000', width: 'device-width', initialScale: 1, viewportFit: 'cover' };
 
+// Runs before the page paints: skips the opening animation on passes, Pitlane, and return visits.
+const introCheck = `try{var p=location.pathname;if(p.indexOf('/pass')===0||p.indexOf('/pitlane')===0||sessionStorage.getItem('invtl-intro-seen'))document.documentElement.classList.add('no-intro')}catch(e){}`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: introCheck }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
@@ -22,7 +27,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap"
         />
       </head>
-      <body className="bg-black font-sans text-white antialiased">{children}</body>
+      <body className="bg-black font-sans text-white antialiased">
+        <IntroSplash />
+        {children}
+      </body>
     </html>
   );
 }
