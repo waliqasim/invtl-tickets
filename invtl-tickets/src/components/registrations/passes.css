@@ -1,0 +1,35 @@
+/* Motion for the register page and pass. Imported by those pages only. */
+.invtl-kenburns { animation: invtl-kb 22s ease-in-out infinite alternate; }
+@keyframes invtl-kb { from { transform: scale(1); } to { transform: scale(1.12) translate(-2%, -1%); } }
+
+.invtl-ticker { display: flex; width: max-content; animation: invtl-tick 26s linear infinite; }
+@keyframes invtl-tick { to { transform: translateX(-50%); } }
+
+.invtl-drift { animation: invtl-drift 18s ease-in-out infinite alternate; }
+@keyframes invtl-drift { from { object-position: 20% 50%; } to { object-position: 80% 50%; } }
+
+.invtl-shimmer {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.22) 50%, transparent 65%);
+  background-size: 250% 100%;
+  animation: invtl-sh 2.6s linear infinite;
+  mix-blend-mode: screen;
+}
+.invtl-shimmer-dark {
+  background: linear-gradient(105deg, transparent 35%, rgba(0,0,0,.14) 50%, transparent 65%);
+  background-size: 250% 100%;
+  mix-blend-mode: normal;
+}
+@keyframes invtl-sh { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+
+.invtl-pulse { animation: invtl-pulse 1.4s infinite; }
+@keyframes invtl-pulse { 50% { opacity: .25; } }
+
+.invtl-load { animation: invtl-load 1.1s ease-out forwards; }
+@keyframes invtl-load { from { width: 0; } to { width: 100%; } }
+
+/* The pass must keep moving for staff to trust it, so the shimmer and clock stay on
+   even with reduced motion; only the decorative motion stops. */
+@media (prefers-reduced-motion: reduce) {
+  .invtl-kenburns, .invtl-ticker, .invtl-drift { animation: none; }
+}
