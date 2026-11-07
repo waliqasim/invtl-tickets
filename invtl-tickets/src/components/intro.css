@@ -1,0 +1,79 @@
+/* Opening animation for tickets.theinvtl.com */
+#invtl-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  cursor: pointer;
+  animation: intro-out 0.7s cubic-bezier(0.7, 0, 0.2, 1) 2.6s forwards;
+}
+#invtl-intro.is-leaving { animation: intro-out 0.45s cubic-bezier(0.7, 0, 0.2, 1) forwards; }
+.no-intro #invtl-intro { display: none; }
+
+.intro-word {
+  display: flex;
+  gap: 0.3em;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(48px, 14vw, 120px);
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+.intro-word span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(6px);
+  animation: intro-letter 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.intro-line {
+  height: 2px;
+  width: min(320px, 70vw);
+  background: #fff;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: intro-line 0.6s cubic-bezier(0.7, 0, 0.2, 1) 0.75s forwards;
+}
+
+.intro-credit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8e8e93;
+  opacity: 0;
+  animation: intro-fade 0.6s ease 1.35s forwards;
+}
+.intro-credit img { height: 18px; width: auto; }
+
+.intro-skip {
+  position: absolute;
+  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #3a3a3d;
+}
+
+@keyframes intro-letter { to { opacity: 1; transform: none; filter: none; } }
+@keyframes intro-line { to { transform: scaleX(1); } }
+@keyframes intro-fade { to { opacity: 1; } }
+@keyframes intro-out {
+  to { transform: translateY(-100%); visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-word span, .intro-line, .intro-credit { animation-duration: 0.01s; animation-delay: 0s; }
+  #invtl-intro { animation: intro-out 0.01s linear 1.2s forwards; }
+}
