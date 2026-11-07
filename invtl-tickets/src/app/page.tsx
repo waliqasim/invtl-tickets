@@ -1,9 +1,10 @@
-// theinvtl.com/register (and tickets.theinvtl.com) → lists every event with registration open.
+// tickets.theinvtl.com → lists every event with registration open.
 // If exactly one is open, guests go straight to it.
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { adminDb, formatShowDate, toEventView } from '@/lib/registrations/server';
 import CreatedBy from '@/components/registrations/CreatedBy';
+import EntryNotice from '@/components/registrations/EntryNotice';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Tickets | INVTL', description: 'Free registration for INVTL shows.' };
@@ -24,7 +25,8 @@ export default async function TicketsIndex() {
       </header>
       <section className="mx-auto max-w-6xl px-4 py-12">
         <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-400">Tickets</p>
-        <h1 className="mb-8 mt-2 text-5xl font-bold uppercase">Free registration</h1>
+        <h1 className="mb-6 mt-2 text-5xl font-bold uppercase">Upcoming shows</h1>
+        <EntryNotice className="mb-8 max-w-2xl" />
         {events.length === 0 ? (
           <div className="border border-neutral-800 p-8 text-neutral-400">
             No shows are open for registration right now. Follow @theinvtl for the next invite.
