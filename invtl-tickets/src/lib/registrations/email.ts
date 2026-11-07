@@ -37,6 +37,8 @@ ${row('PARTY', party)}
 </table>
 <a href="${link}" style="display:block;text-align:center;background:#fff;color:#000;font:700 14px 'Space Grotesk',Helvetica,Arial,sans-serif;letter-spacing:.2em;padding:18px;text-decoration:none">OPEN MY PASS</a>
 <p style="margin:18px 0 0;font-size:13px;color:#8e8e93">Tip: open the pass, then add it to your home screen so it's one tap away on the day.</p>
+
+<p style="margin:14px 0 0;padding:12px 14px;border:1px solid #fff;font-size:13px;color:#cfcfd2"><b style="color:#fff">SHOW ENTRY ONLY.</b> This ticket gets you into the show as a guest. It does not register a car for display and does not include parking.</p>
 </td></tr>
 <tr><td style="border-top:1px solid #1d1d1f;padding:18px 30px;font:11px 'IBM Plex Mono',Menlo,monospace;color:#8e8e93;letter-spacing:.1em">@THEINVTL &nbsp;·&nbsp; THEINVTL.COM</td></tr>
 <tr><td style="padding:0 30px 18px;font:9.5px 'IBM Plex Mono',Menlo,monospace;color:#6e6e73;letter-spacing:.14em">CREATED FOR INVTL BY &nbsp;<img src="${siteUrl()}/torq-technologies.png" alt="TorqTechnologies" height="14" style="height:14px;width:auto;vertical-align:middle;opacity:.8"></td></tr>
