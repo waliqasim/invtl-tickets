@@ -20,11 +20,11 @@ export async function GET(req: Request) {
     const s = v === null || v === undefined ? '' : String(v);
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  const header = ['pass_number', 'first_name', 'last_name', 'email', 'party_size', 'status', 'registered_at', 'checked_in_at'];
+  const header = ['pass_number', 'first_name', 'last_name', 'email', 'license_plate', 'party_size', 'status', 'registered_at', 'checked_in_at'];
   const lines = [
     header.join(','),
     ...data.map((r) =>
-      [padNo(r.pass_number), r.first_name, r.last_name, r.email, r.party_size, r.status, r.created_at, r.checked_in_at]
+      [padNo(r.pass_number), r.first_name, r.last_name, r.email, r.license_plate, r.party_size, r.status, r.created_at, r.checked_in_at]
         .map(cell)
         .join(','),
     ),
