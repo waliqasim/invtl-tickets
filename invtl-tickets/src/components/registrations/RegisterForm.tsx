@@ -13,6 +13,7 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
   const [first, setFirst] = useState('');
   const [last, setLast] = useState('');
   const [email, setEmail] = useState('');
+  const [plate, setPlate] = useState('');
   const [party, setParty] = useState(1);
   const [agreed, setAgreed] = useState(false);
   const [company, setCompany] = useState(''); // honeypot
@@ -24,6 +25,8 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
     setError(null);
     if (!first.trim() || !last.trim()) return setError('Add your first and last name.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError("That email doesn't look right. Check it and try again.");
+    const plateClean = plate.trim().toUpperCase();
+    if (!/^[A-Z0-9][A-Z0-9 -]{0,8}[A-Z0-9]$/.test(plateClean)) return setError('Add the license plate of the car you\'re arriving in (letters and numbers only).');
     if (!agreed) return setError('Tick the box to confirm you understand this is show entry only and agree to the meet rules.');
     if (spotsLeft !== null && party > spotsLeft) return setError(`Only ${spotsLeft} spots left. Lower your party size.`);
 
@@ -32,7 +35,7 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId, firstName: first, lastName: last, email, partySize: party, agreed, company }),
+        body: JSON.stringify({ eventId, firstName: first, lastName: last, email, partySize: party, licensePlate: plate, agreed, company }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -52,7 +55,7 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
   return (
     <form onSubmit={submit} noValidate className="border border-white p-6 sm:p-8">
       <h2 className="text-[26px] font-bold uppercase tracking-wide">Claim your pass</h2>
-      <p className="mb-5 text-sm text-neutral-400">Four fields. Takes about 20 seconds.</p>
+      <p className="mb-5 text-sm text-neutral-400">Five fields. Takes about 30 seconds.</p>
       <EntryNotice className="mb-6" />
 
       {error && (
@@ -78,6 +81,11 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
         <input className={input} type="email" inputMode="email" autoComplete="email" placeholder="you@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
       </label>
 
+      <label className="mb-5 flex flex-col gap-1.5">
+        <span className={label}>License plate (car you&apos;re arriving in)</span>
+        <input className={`${input} font-mono uppercase tracking-[0.12em]`} autoComplete="off" autoCapitalize="characters" placeholder="ABC1234" maxLength={10} value={plate} onChange={(e) => setPlate(e.target.value.toUpperCase())} />
+      </label>
+
       <div className="mb-5">
         <span className={label} id="party-label">Party size, including you</span>
         <div role="group" aria-labelledby="party-label" className="mt-2 grid grid-cols-4 gap-2">
@@ -87,7 +95,7 @@ export default function RegisterForm({ eventId, spotsLeft }: { eventId: string; 
               type="button"
               aria-pressed={party === n}
               onClick={() => setParty(n)}
-              className={`h-13 h-[52px] border font-mono text-lg ${party === n ? 'border-white bg-white text-black' : 'border-neutral-600 hover:border-white'}`}
+              className={`h-[52px] border font-mono text-lg ${party === n ? 'border-white bg-white text-black' : 'border-neutral-600 hover:border-white'}`}
             >
               {n}
             </button>
