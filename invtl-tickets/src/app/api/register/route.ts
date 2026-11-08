@@ -23,10 +23,12 @@ export async function POST(req: Request) {
   const last = clean(body.lastName, 60);
   const email = clean(body.email, 254).toLowerCase();
   const party = Number(body.partySize);
+  const plate = clean(body.licensePlate, 10).toUpperCase();
 
   if (!first || !last) return NextResponse.json({ error: 'Add your first and last name.' }, { status: 400 });
   if (!EMAIL_RE.test(email)) return NextResponse.json({ error: "That email doesn't look right. Check it and try again." }, { status: 400 });
   if (!Number.isInteger(party) || party < 1 || party > 4) return NextResponse.json({ error: 'Party size must be 1 to 4.' }, { status: 400 });
+  if (!/^[A-Z0-9][A-Z0-9 -]{0,8}[A-Z0-9]$/.test(plate)) return NextResponse.json({ error: "Add the license plate of the car you're arriving in (letters and numbers only)." }, { status: 400 });
   if (body.agreed !== true) return NextResponse.json({ error: 'Tick the box to agree to the meet rules.' }, { status: 400 });
 
   const ev = await getEventById(eventId);
@@ -47,6 +49,7 @@ export async function POST(req: Request) {
     p_last: last,
     p_email: email,
     p_party: party,
+    p_plate: plate,
   });
 
   if (error) {
