@@ -21,6 +21,7 @@ type Guest = {
   last_name: string;
   email: string;
   party_size: number;
+  license_plate: string | null;
   status: 'valid' | 'checked_in' | 'cancelled';
   created_at: string;
   checked_in_at: string | null;
@@ -145,7 +146,7 @@ export default function RegistrationsManager() {
   const guests = useMemo(() => {
     const s = q.trim().toLowerCase();
     return (data?.rows ?? []).filter(
-      (g) => !s || `${g.first_name} ${g.last_name} ${g.email} ${pad(g.pass_number)} ${g.pass_number}`.toLowerCase().includes(s),
+      (g) => !s || `${g.first_name} ${g.last_name} ${g.email} ${g.license_plate ?? ''} ${pad(g.pass_number)} ${g.pass_number}`.toLowerCase().includes(s),
     );
   }, [data, q]);
 
@@ -250,7 +251,7 @@ export default function RegistrationsManager() {
               </div>
 
               <div className="mb-2.5 flex flex-wrap items-center justify-between gap-3">
-                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, email or pass Nº" aria-label="Search guests" className="w-full max-w-xs rounded-none border border-neutral-600 bg-transparent px-3 py-2 font-mono text-sm" />
+                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, email, plate or pass Nº" aria-label="Search guests" className="w-full max-w-xs rounded-none border border-neutral-600 bg-transparent px-3 py-2 font-mono text-sm" />
                 <div className="flex gap-2">
                   <button onClick={reminders} className="border border-neutral-600 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] hover:border-white">Send day-before reminder</button>
                   <a href={`/api/pitlane/export?event=${ev.id}`} className="border border-neutral-600 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] hover:border-white">Export CSV</a>
@@ -258,10 +259,10 @@ export default function RegistrationsManager() {
               </div>
 
               <div className="overflow-x-auto border border-neutral-800">
-                <table className="w-full min-w-[720px] border-collapse">
+                <table className="w-full min-w-[820px] border-collapse">
                   <thead>
                     <tr className="border-b border-neutral-800">
-                      {['Nº', 'Name', 'Email', 'Party', 'Registered', 'Status', ''].map((h) => (
+                      {['Nº', 'Name', 'Email', 'Plate', 'Party', 'Registered', 'Status', ''].map((h) => (
                         <th key={h} className={`${label} px-3.5 py-3 text-left font-medium`}>{h}</th>
                       ))}
                     </tr>
@@ -272,6 +273,7 @@ export default function RegistrationsManager() {
                         <td className="px-3.5 py-3 font-mono text-[13px] tabular-nums">{pad(g.pass_number)}</td>
                         <td className="px-3.5 py-3 text-sm">{g.first_name} {g.last_name}</td>
                         <td className="px-3.5 py-3 font-mono text-[13px]">{g.email}</td>
+                        <td className="px-3.5 py-3 font-mono text-[13px] tracking-[0.08em]">{g.license_plate ?? '—'}</td>
                         <td className="px-3.5 py-3 font-mono text-[13px]">{g.party_size}</td>
                         <td className="px-3.5 py-3 font-mono text-[13px]">{new Date(g.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</td>
                         <td className="px-3.5 py-3">
@@ -286,7 +288,7 @@ export default function RegistrationsManager() {
                       </tr>
                     ))}
                     {!guests.length && (
-                      <tr><td colSpan={7} className="px-3.5 py-6 text-sm text-neutral-400">{q ? `No guests match “${q}”.` : 'No one has registered for this event yet.'}</td></tr>
+                      <tr><td colSpan={8} className="px-3.5 py-6 text-sm text-neutral-400">{q ? `No guests match “${q}”.` : 'No one has registered for this event yet.'}</td></tr>
                     )}
                   </tbody>
                 </table>
