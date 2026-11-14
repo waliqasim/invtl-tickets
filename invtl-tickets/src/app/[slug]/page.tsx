@@ -64,7 +64,7 @@ export default async function RegisterPage({ params }: { params: { slug: string 
 
       <section className="mx-auto grid max-w-6xl gap-9 px-4 py-9 md:grid-cols-[1fr_1.15fr] md:gap-12 md:py-14">
         <div className="min-w-0">
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-400">Registered</p>
+          <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-400">People registered</p>
           <p className="font-mono">
             <span className="text-[clamp(48px,7vw,72px)] font-medium leading-none tabular-nums">{heads}</span>
             {ev.capacity !== null && <span className="text-lg text-neutral-400"> / {ev.capacity}</span>}
