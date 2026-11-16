@@ -3,9 +3,11 @@ import { notFound } from 'next/navigation';
 import { formatShowDate, getEventBySlug, headcount } from '@/lib/registrations/server';
 import RegisterForm from '@/components/registrations/RegisterForm';
 import CreatedBy from '@/components/registrations/CreatedBy';
+import LiveCount from '@/components/registrations/LiveCount';
 import '@/components/registrations/passes.css';
 
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const ev = await getEventBySlug(params.slug);
@@ -64,19 +66,7 @@ export default async function RegisterPage({ params }: { params: { slug: string 
 
       <section className="mx-auto grid max-w-6xl gap-9 px-4 py-9 md:grid-cols-[1fr_1.15fr] md:gap-12 md:py-14">
         <div className="min-w-0">
-          <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-400">People registered</p>
-          <p className="font-mono">
-            <span className="text-[clamp(48px,7vw,72px)] font-medium leading-none tabular-nums">{heads}</span>
-            {ev.capacity !== null && <span className="text-lg text-neutral-400"> / {ev.capacity}</span>}
-          </p>
-          {ev.capacity !== null && (
-            <>
-              <div className="relative mb-2.5 mt-4 h-0.5 bg-neutral-800">
-                <div className="absolute inset-y-0 left-0 bg-white" style={{ width: `${Math.min(100, (heads / ev.capacity) * 100)}%` }} />
-              </div>
-              <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-400">{left} spots left</p>
-            </>
-          )}
+          <LiveCount eventId={ev.id} initialHeads={heads} initialCapacity={ev.capacity} />
           <dl className="mt-9 border-t border-neutral-800">
             {[
               ['Entry', 'Free. Registration required.'],
