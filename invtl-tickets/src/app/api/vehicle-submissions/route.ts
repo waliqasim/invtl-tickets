@@ -35,6 +35,7 @@ export async function POST(req: Request) {
   if (!row.event_id) return NextResponse.json({ error: "Pick the show you're registering for." }, { status: 400 });
   if (!row.owner_name) return NextResponse.json({ error: "Add the owner's name." }, { status: 400 });
   if (!EMAIL_RE.test(row.email)) return NextResponse.json({ error: "That email doesn't look right." }, { status: 400 });
+  if ((row.phone ?? '').replace(/[^0-9]/g, '').length < 10) return NextResponse.json({ error: 'Add a phone number so we can text you if your car is confirmed.' }, { status: 400 });
   if (!row.vehicle_make || !row.vehicle_model) return NextResponse.json({ error: "Add the car's make and model." }, { status: 400 });
   if (!PLATE_RE.test(row.license_plate)) return NextResponse.json({ error: "Add the car's license plate (letters and numbers only)." }, { status: 400 });
 
