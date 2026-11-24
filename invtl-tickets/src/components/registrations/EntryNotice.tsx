@@ -5,8 +5,8 @@ export default function EntryNotice({ className = '' }: { className?: string }) 
       <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.16em]">Show entry only</p>
       <p className="mt-1.5 text-sm text-neutral-300">
         This free ticket gets you into the show as a guest. It does not register a car for display, and it does not
-        include parking. Want to show your car? Apply at{' '}
-        <a href="https://theinvtl.com/submit" className="underline underline-offset-4 hover:text-white">theinvtl.com/submit</a>.
+        include parking. Want to show your car?{' '}
+        <a href="/showcase" className="underline underline-offset-4 hover:text-white">Register your car here</a>.
       </p>
     </div>
   );
