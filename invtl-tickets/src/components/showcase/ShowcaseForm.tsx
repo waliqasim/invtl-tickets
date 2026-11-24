@@ -194,3 +194,16 @@ export default function ShowcaseForm({ events }: { events: EventOption[] }) {
       </div>
 
       {/* Honeypot: hidden from people, bots fill it in */}
+      <input type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden className="absolute -left-[9999px] h-0 w-0 opacity-0" />
+
+      <button
+        type="submit"
+        disabled={status === 'sending' || uploading}
+        className="relative h-[58px] w-full overflow-hidden bg-white font-sans text-base font-bold uppercase tracking-[0.2em] text-black disabled:cursor-wait disabled:opacity-80"
+      >
+        {status === 'sending' ? 'Sending…' : 'Submit my car →'}
+      </button>
+      <p className="mt-3.5 text-[12.5px] text-neutral-400">This registers your car for review. It isn&apos;t a spectator ticket.</p>
+    </form>
+  );
+}
