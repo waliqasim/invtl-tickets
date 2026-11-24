@@ -37,7 +37,8 @@ export default async function ShowcasePage() {
           </p>
           <dl className="mt-8 border-t border-neutral-800">
             {[
-              ['Cost', 'Free'],
+              ['Standard', 'Free'],
+              ['Featured', '$25, only if your car is selected'],
               ['Review', 'Every car is reviewed by the INVTL team'],
               ['Confirmation', 'By email or Instagram before the show'],
               ['Just watching?', 'Get a spectator ticket instead'],
