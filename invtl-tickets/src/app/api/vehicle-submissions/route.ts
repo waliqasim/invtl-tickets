@@ -29,6 +29,7 @@ export async function POST(req: Request) {
     license_plate: clean(b.license_plate, 10).toUpperCase(),
     vehicle_notes: clean(b.vehicle_notes, 1000) || null,
     photo_url: clean(b.photo_url, 500) || null,
+    requested_tier: b.requested_tier === 'featured' ? 'featured' : 'standard',
   };
 
   if (!row.event_id) return NextResponse.json({ error: "Pick the show you're registering for." }, { status: 400 });
