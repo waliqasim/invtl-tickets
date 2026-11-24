@@ -37,13 +37,13 @@ export default async function ShowcasePage() {
           </p>
           <dl className="mt-8 border-t border-neutral-800">
             {[
-              ['Standard', 'Free'],
-              ['Featured', '$25, only if your car is selected'],
+              ['Main showcase', 'Supercars. Free'],
+              ['Featured', 'Show cars. $25, only if your car is selected'],
               ['Review', 'Every car is reviewed by the INVTL team'],
-              ['Confirmation', 'By email or Instagram before the show'],
+              ['Confirmation', 'By text message or Instagram before the show'],
               ['Just watching?', 'Get a spectator ticket instead'],
             ].map(([k, v]) => (
-              <div key={k} className="grid grid-cols-[120px_1fr] gap-3 border-b border-neutral-800 py-3.5">
+              <div key={k} className="grid grid-cols-[130px_1fr] gap-3 border-b border-neutral-800 py-3.5">
                 <dt className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-400">{k}</dt>
                 <dd>{k === 'Just watching?' ? <a href="/spectator" className="underline underline-offset-4">{v}</a> : v}</dd>
               </div>
