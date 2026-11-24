@@ -20,6 +20,7 @@ export default function ShowcaseForm({ events }: { events: EventOption[] }) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [tier, setTier] = useState<'standard' | 'featured'>('standard');
 
   async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -47,6 +48,7 @@ export default function ShowcaseForm({ events }: { events: EventOption[] }) {
     if (!get('event_id')) return setError("Pick the show you're registering for.");
     if (!get('owner_name').trim()) return setError("Add the owner's name.");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(get('email').trim())) return setError("That email doesn't look right.");
+    if (get('phone').replace(/[^0-9]/g, '').length < 10) return setError('Add a phone number so we can text you if your car is confirmed.');
     if (!get('vehicle_make').trim() || !get('vehicle_model').trim()) return setError("Add the car's make and model.");
     if (!/^[A-Z0-9][A-Z0-9 -]{0,8}[A-Z0-9]$/.test(get('license_plate').trim().toUpperCase()))
       return setError("Add the car's license plate (letters and numbers only).");
@@ -68,6 +70,7 @@ export default function ShowcaseForm({ events }: { events: EventOption[] }) {
           license_plate: get('license_plate'),
           vehicle_notes: get('vehicle_notes'),
           photo_url: photoUrl,
+          requested_tier: tier,
           company: get('company'),
         }),
       });
@@ -99,7 +102,9 @@ export default function ShowcaseForm({ events }: { events: EventOption[] }) {
         <p className={label}>Received</p>
         <h2 className="mb-2.5 mt-2 text-3xl font-bold uppercase">Your car is in for review</h2>
         <p className="text-neutral-400">
-          We review every car before the show and will reach out if you&apos;re confirmed. Coming to watch as well? Your
+          We review every car before the show and will reach out if you&apos;re confirmed.
+          {tier === 'featured' && ' You applied as a featured show car. If your car is selected, we’ll contact you about the $25 fee.'}{' '}
+          Coming to watch as well? Your
           passengers can grab a free <a href="/spectator" className="text-white underline underline-offset-4">spectator ticket</a>.
         </p>
       </div>
@@ -128,6 +133,33 @@ export default function ShowcaseForm({ events }: { events: EventOption[] }) {
         </select>
       </label>
 
+      <div className="mb-6 flex flex-col gap-2">
+        <span className={label} id="tier-label">Category</span>
+        <div role="radiogroup" aria-labelledby="tier-label" className="grid gap-2 sm:grid-cols-2">
+          {([
+            { v: 'standard', name: 'Main showcase', price: 'Free', note: 'For supercars. Your car in the main showcase.' },
+            { v: 'featured', name: 'Featured', price: '$25', note: 'For show cars. You only pay if we select your car.' },
+          ] as const).map((o) => (
+            <button
+              key={o.v}
+              type="button"
+              role="radio"
+              aria-checked={tier === o.v}
+              onClick={() => setTier(o.v)}
+              className={`border p-4 text-left transition-colors ${
+                tier === o.v ? 'border-white bg-white text-black' : 'border-neutral-600 hover:border-white'
+              }`}
+            >
+              <span className="flex items-baseline justify-between gap-2">
+                <span className="text-lg font-bold uppercase">{o.name}</span>
+                <span className="font-mono text-sm">{o.price}</span>
+              </span>
+              <span className={`mt-1 block text-sm ${tier === o.v ? 'text-neutral-700' : 'text-neutral-400'}`}>{o.note}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <label className="mb-5 flex flex-col gap-1.5">
         <span className={label}>Owner name</span>
         <input name="owner_name" autoComplete="name" maxLength={100} className={input} />
@@ -138,7 +170,7 @@ export default function ShowcaseForm({ events }: { events: EventOption[] }) {
           <input name="email" type="email" inputMode="email" autoComplete="email" className={input} placeholder="you@email.com" />
         </label>
         <label className="mb-5 flex flex-col gap-1.5">
-          <span className={label}>Phone (optional)</span>
+          <span className={label}>Phone</span>
           <input name="phone" type="tel" autoComplete="tel" className={input} />
         </label>
       </div>
