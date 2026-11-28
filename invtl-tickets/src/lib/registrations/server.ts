@@ -7,6 +7,7 @@ import { cookies } from 'next/headers';
 export type RegStatus = 'valid' | 'checked_in' | 'cancelled';
 
 export type Registration = {
+    pass_type?: string | null;
   id: string;
   event_id: string;
   pass_number: number;
