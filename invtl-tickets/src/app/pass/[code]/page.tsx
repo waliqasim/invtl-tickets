@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { notFound } from 'next/navigation';
 import { adminDb, formatShowDate, getEventById, isShowDay, padNo, type Registration } from '@/lib/registrations/server';
 import PassCard from '@/components/registrations/PassCard';
+import { passTypeOf } from '@/lib/registrations/passTypes';
 import '@/components/registrations/passes.css';
 
 export const dynamic = 'force-dynamic';
@@ -49,6 +50,7 @@ export default async function PassPage({
         image={ev.image}
         gateWord={isShowDay(ev.dateISO) ? ev.gateWord : null}
         existing={searchParams.existing === '1'}
+        passType={passTypeOf(r.pass_type)}
       />
     </main>
   );
