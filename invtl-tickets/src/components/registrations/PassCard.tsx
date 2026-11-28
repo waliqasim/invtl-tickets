@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import CreatedBy from './CreatedBy';
+import { PASS_TYPES, type PassType } from '@/lib/registrations/passTypes';
 
 type Props = {
   code: string;
@@ -17,6 +18,7 @@ type Props = {
   image: string | null;
   gateWord: string | null;
   existing: boolean;
+  passType: PassType;
 };
 
 const label = 'font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-400';
@@ -55,6 +57,8 @@ export default function PassCard(p: Props) {
     router.refresh();
   }
 
+  const t = PASS_TYPES[p.passType];
+
   const badge =
     p.status === 'checked_in'
       ? { text: 'CHECKED IN', cls: 'bg-white text-black border-white', dot: 'bg-black' }
@@ -65,11 +69,19 @@ export default function PassCard(p: Props) {
   return (
     <div className="mx-auto grid max-w-6xl justify-items-center gap-7 px-4 py-6 md:grid-cols-[auto_1fr] md:items-start md:justify-items-stretch md:gap-14 md:py-12">
       {/* The pass itself */}
-      <div className="relative flex min-h-[calc(100svh-48px)] w-full max-w-[380px] flex-col overflow-hidden border border-neutral-800 bg-black md:min-h-[690px] md:rounded-[34px]">
+      <div
+        className="relative flex min-h-[calc(100svh-48px)] w-full max-w-[380px] flex-col overflow-hidden border-2 bg-black md:min-h-[690px] md:rounded-[34px]"
+        style={{ borderColor: t.bg, boxShadow: `0 0 48px ${t.bg}40` }}
+      >
         <div className="invtl-shimmer" />
-        <div className="px-5 pb-3.5 pt-6 text-center">
+        <div className="px-5 pb-4 pt-6 text-center">
           <div className="font-sans text-xl font-bold tracking-[0.32em]">INVTL</div>
           <div className={`${label} mt-1.5`}>Invitational pass</div>
+        </div>
+        {/* Pass color band: the gate team reads this first */}
+        <div className="relative overflow-hidden px-5 py-3 text-center" style={{ background: t.bg, color: t.fg }}>
+          <div className={`invtl-shimmer ${t.darkBg ? '' : 'invtl-shimmer-dark'}`} />
+          <div className="relative font-sans text-[26px] font-bold uppercase leading-none tracking-[0.08em]">{t.label}</div>
         </div>
         <div className="h-[120px] overflow-hidden bg-neutral-900">
           {p.image && (
@@ -94,10 +106,10 @@ export default function PassCard(p: Props) {
             {badge.text}
           </div>
         </div>
-        <div className="relative mt-5 overflow-hidden bg-white px-[22px] pb-[18px] pt-3.5 text-black">
-          <div className="invtl-shimmer invtl-shimmer-dark" />
+        <div className="relative mt-5 overflow-hidden px-[22px] pb-[18px] pt-3.5" style={{ background: t.bg, color: t.fg }}>
+          <div className={`invtl-shimmer ${t.darkBg ? '' : 'invtl-shimmer-dark'}`} />
           <div className="flex items-baseline justify-between gap-2.5">
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-neutral-500">Live</span>
+            <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] opacity-70">Live · {t.label}</span>
             <span className="font-mono text-[22px] font-semibold tabular-nums" suppressHydrationWarning>{now || '--:--:--'}</span>
           </div>
           {p.gateWord && (
@@ -120,6 +132,10 @@ export default function PassCard(p: Props) {
           </div>
         )}
         <h2 className="mb-3.5 text-[34px] font-bold uppercase leading-tight">Show this at the gate</h2>
+        <p className="mb-3 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em]">
+          <i className="h-3 w-3 rounded-full" style={{ background: t.bg }} />
+          {t.label} pass
+        </p>
         <p className="max-w-[52ch] text-neutral-300">
           Open this page on your phone when you arrive. Staff will check that the clock is ticking and the shimmer is moving{p.gateWord ? ', and that the gate word matches' : ''}. Screenshots aren&apos;t accepted.
         </p>
