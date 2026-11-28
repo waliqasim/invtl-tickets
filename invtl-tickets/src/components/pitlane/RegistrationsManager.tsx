@@ -3,6 +3,7 @@
 // Pitlane → Registrations. Left: every event with its headcount. Right: the selected event's
 // settings and guest list. Every save shows a visible success or error message.
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PASS_TYPES, passTypeOf } from '@/lib/registrations/passTypes';
 
 type EventRow = {
   id: string;
@@ -22,6 +23,7 @@ type Guest = {
   email: string;
   party_size: number;
   license_plate: string | null;
+  pass_type: string | null;
   status: 'valid' | 'checked_in' | 'cancelled';
   created_at: string;
   checked_in_at: string | null;
@@ -126,6 +128,22 @@ export default function RegistrationsManager() {
     }
   }
 
+  async function setVip(g: Guest, on: boolean) {
+    try {
+      const res = await fetch('/api/pitlane/pass-type', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: g.id, type: on ? 'vip' : 'spectator' }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? `Couldn't change the pass (${res.status})`);
+      setToast({ ok: true, text: on ? `${g.first_name} ${g.last_name} is now VIP. Their pass is neon blue.` : `${g.first_name} ${g.last_name} is back to a spectator pass.` });
+      load(eventId, true);
+    } catch (e) {
+      setToast({ ok: false, text: (e as Error).message });
+    }
+  }
+
   async function reminders() {
     if (!eventId) return;
     setToast({ ok: true, text: 'Sending reminders…' });
@@ -146,7 +164,7 @@ export default function RegistrationsManager() {
   const guests = useMemo(() => {
     const s = q.trim().toLowerCase();
     return (data?.rows ?? []).filter(
-      (g) => !s || `${g.first_name} ${g.last_name} ${g.email} ${g.license_plate ?? ''} ${pad(g.pass_number)} ${g.pass_number}`.toLowerCase().includes(s),
+      (g) => !s || `${g.first_name} ${g.last_name} ${g.email} ${g.license_plate ?? ''} ${PASS_TYPES[passTypeOf(g.pass_type)].label} ${pad(g.pass_number)} ${g.pass_number}`.toLowerCase().includes(s),
     );
   }, [data, q]);
 
@@ -251,7 +269,7 @@ export default function RegistrationsManager() {
               </div>
 
               <div className="mb-2.5 flex flex-wrap items-center justify-between gap-3">
-                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, email, plate or pass Nº" aria-label="Search guests" className="w-full max-w-xs rounded-none border border-neutral-600 bg-transparent px-3 py-2 font-mono text-sm" />
+                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, email, plate, pass Nº or type" aria-label="Search guests" className="w-full max-w-xs rounded-none border border-neutral-600 bg-transparent px-3 py-2 font-mono text-sm" />
                 <div className="flex gap-2">
                   <button onClick={reminders} className="border border-neutral-600 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] hover:border-white">Send day-before reminder</button>
                   <a href={`/api/pitlane/export?event=${ev.id}`} className="border border-neutral-600 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.14em] hover:border-white">Export CSV</a>
@@ -259,10 +277,10 @@ export default function RegistrationsManager() {
               </div>
 
               <div className="overflow-x-auto border border-neutral-800">
-                <table className="w-full min-w-[820px] border-collapse">
+                <table className="w-full min-w-[940px] border-collapse">
                   <thead>
                     <tr className="border-b border-neutral-800">
-                      {['Nº', 'Name', 'Email', 'Plate', 'Party', 'Registered', 'Status', ''].map((h) => (
+                      {['Nº', 'Name', 'Pass', 'Email', 'Plate', 'Party', 'Registered', 'Status', ''].map((h) => (
                         <th key={h} className={`${label} px-3.5 py-3 text-left font-medium`}>{h}</th>
                       ))}
                     </tr>
@@ -272,6 +290,16 @@ export default function RegistrationsManager() {
                       <tr key={g.id} className="border-b border-neutral-900 last:border-0">
                         <td className="px-3.5 py-3 font-mono text-[13px] tabular-nums">{pad(g.pass_number)}</td>
                         <td className="px-3.5 py-3 text-sm">{g.first_name} {g.last_name}</td>
+                        <td className="px-3.5 py-3">
+                          {(() => {
+                            const t = PASS_TYPES[passTypeOf(g.pass_type)];
+                            return (
+                              <span className="whitespace-nowrap px-2 py-1 font-mono text-[10.5px] font-semibold uppercase tracking-[0.1em]" style={{ background: t.bg, color: t.fg }}>
+                                {t.label}
+                              </span>
+                            );
+                          })()}
+                        </td>
                         <td className="px-3.5 py-3 font-mono text-[13px]">{g.email}</td>
                         <td className="px-3.5 py-3 font-mono text-[13px] tracking-[0.08em]">{g.license_plate ?? '—'}</td>
                         <td className="px-3.5 py-3 font-mono text-[13px]">{g.party_size}</td>
@@ -284,11 +312,19 @@ export default function RegistrationsManager() {
                         <td className="px-3.5 py-3">
                           {g.status === 'valid' && <button onClick={() => checkIn(g)} className="border border-white px-2.5 py-1.5 font-mono text-[10.5px] tracking-[0.12em]">CHECK IN</button>}
                           {g.status === 'checked_in' && <button onClick={() => checkIn(g, true)} className="border border-neutral-700 px-2.5 py-1.5 font-mono text-[10.5px] tracking-[0.12em] text-neutral-400">UNDO</button>}
+                          {g.status !== 'cancelled' && (
+                            <button
+                              onClick={() => setVip(g, g.pass_type !== 'vip')}
+                              className="ml-2 border border-neutral-700 px-2.5 py-1.5 font-mono text-[10.5px] tracking-[0.12em] text-neutral-300 hover:border-white"
+                            >
+                              {g.pass_type === 'vip' ? 'REMOVE VIP' : 'MAKE VIP'}
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
                     {!guests.length && (
-                      <tr><td colSpan={8} className="px-3.5 py-6 text-sm text-neutral-400">{q ? `No guests match “${q}”.` : 'No one has registered for this event yet.'}</td></tr>
+                      <tr><td colSpan={9} className="px-3.5 py-6 text-sm text-neutral-400">{q ? `No guests match “${q}”.` : 'No one has registered for this event yet.'}</td></tr>
                     )}
                   </tbody>
                 </table>
