@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   }
 
   const type = sub.featured ? 'featured' : 'showcase';
-  const parts = String(sub.owner_name ?? '').trim().split(/\s+/);
+  const parts = String(sub.owner_name ?? '').trim().split(' ').filter(Boolean);
   const first = parts.shift() || 'Guest';
   const last = parts.join(' ');
 
