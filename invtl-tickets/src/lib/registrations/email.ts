@@ -2,6 +2,7 @@
 // Set RESEND_API_KEY and verify theinvtl.com as a sending domain in Resend.
 import 'server-only';
 import { type EventView, type Registration, formatShowDate, padNo, siteUrl } from './server';
+import { PASS_TYPES, passTypeOf } from './passTypes';
 
 const FROM = process.env.PASS_EMAIL_FROM ?? 'INVTL <passes@theinvtl.com>';
 
@@ -19,17 +20,20 @@ export function passEmailHtml(kind: 'confirm' | 'reminder', r: Registration, ev:
   const row = (k: string, v: string) =>
     `<tr><td style="padding:11px 0;border-bottom:1px solid #2a2a2c;font:11px 'IBM Plex Mono',Menlo,monospace;letter-spacing:.12em;color:#8e8e93">${k}</td><td align="right" style="padding:11px 0;border-bottom:1px solid #2a2a2c;font:13px 'IBM Plex Mono',Menlo,monospace;color:#fff">${v}</td></tr>`;
   const party = `${r.party_size} ${r.party_size > 1 ? 'GUESTS' : 'GUEST'}`;
+  const t = PASS_TYPES[passTypeOf(r.pass_type)];
 
   return `<!doctype html><html><body style="margin:0;background:#000;color:#fff">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#000"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#000;border:1px solid #1d1d1f">
 <tr><td align="center" style="padding:30px 20px 22px;font:700 22px 'Space Grotesk',Helvetica,Arial,sans-serif;letter-spacing:.32em;color:#fff">INVTL</td></tr>
+<tr><td align="center" style="background:${t.bg};color:${t.fg};padding:14px 20px;font:700 16px 'Space Grotesk',Helvetica,Arial,sans-serif;letter-spacing:.14em">${t.label.toUpperCase()} PASS</td></tr>
 ${ev.image ? `<tr><td><img src="${esc(ev.image)}" width="600" alt="" style="display:block;width:100%;height:auto;max-height:260px;object-fit:cover"></td></tr>` : ''}
 <tr><td style="padding:30px 30px 34px;font-family:'Space Grotesk',Helvetica,Arial,sans-serif">
 <h1 style="margin:0 0 10px;font-size:30px;line-height:1.1;color:#fff">${heading}</h1>
 <p style="margin:0 0 22px;color:#cfcfd2;font-size:15px;line-height:1.5">${lead}</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #2a2a2c;margin-bottom:26px">
 ${row('PASS', 'Nº ' + padNo(r.pass_number))}
+${row('TYPE', t.label.toUpperCase())}
 ${row('EVENT', esc(ev.title.toUpperCase()))}
 ${row('DATE', `${d.short} ${d.dots}${ev.timeLabel ? ' · ' + esc(ev.timeLabel) : ''}`)}
 ${ev.venue ? row('VENUE', esc(ev.venue.toUpperCase())) : ''}
@@ -37,7 +41,6 @@ ${row('PARTY', party)}
 </table>
 <a href="${link}" style="display:block;text-align:center;background:#fff;color:#000;font:700 14px 'Space Grotesk',Helvetica,Arial,sans-serif;letter-spacing:.2em;padding:18px;text-decoration:none">OPEN MY PASS</a>
 <p style="margin:18px 0 0;font-size:13px;color:#8e8e93">Tip: open the pass, then add it to your home screen so it's one tap away on the day.</p>
-
 <p style="margin:14px 0 0;padding:12px 14px;border:1px solid #fff;font-size:13px;color:#cfcfd2"><b style="color:#fff">SHOW ENTRY ONLY.</b> This ticket gets you into the show as a guest. It does not register a car for display and does not include parking.</p>
 </td></tr>
 <tr><td style="border-top:1px solid #1d1d1f;padding:18px 30px;font:11px 'IBM Plex Mono',Menlo,monospace;color:#8e8e93;letter-spacing:.1em">@THEINVTL &nbsp;·&nbsp; THEINVTL.COM</td></tr>
